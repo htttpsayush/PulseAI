@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PulseAI | Train Smarter. Move Better.</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        /* CSS Variables */
+        :root {
+            --bg-color: #ffffff;
+            --text-main: #0f172a;
+            --text-muted: #475569;
+            --primary-color: #0f172a;
+            --primary-hover: #334155;
+            --border-color: #e2e8f0;
+            --badge-live-bg: rgba(34, 197, 94, 0.1);
+            --badge-live-text: #16a34a;
+            --badge-soon-bg: rgba(100, 116, 139, 0.1);
+            --badge-soon-text: #475569;
+        }
+
+        /* Reset & Base */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            font-family: 'Inter', sans-serif;
+            color: var(--text-main);
+            background-color: transparent;
+        }
+        
+        body {
+            overflow-x: hidden;
+            background-color: transparent;
+            position: relative;
+        }
+
+        /* Particle Canvas */
+        #particleCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            pointer-events: none;
+            background-color: var(--bg-color); /* White background */
+        }
+
+        /* Typography */
+        h1, h2, h3, .logo {
+            font-family: 'Outfit', sans-serif;
+        }
+
+        h1 {
+            font-size: clamp(3rem, 6vw + 1rem, 5.5rem);
+            font-weight: 800;
+            line-height: 1.05;
+            letter-spacing: -0.03em;
+            margin-bottom: 1.5rem;
+        }
+
+        h2.section-title {
+            font-size: clamp(2.5rem, 5vw, 3.5rem);
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            margin-bottom: 3.5rem;
+            text-align: center;
+        }
+
+        h3 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            letter-spacing: -0.01em;
+        }
+
+        p {
+            font-size: 1.125rem;
+            color: var(--text-muted);
+            line-height: 1.6;
+        }
+
+        /* Container */
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.875rem 2rem;
+            border-radius: 9999px; /* Pill button */
+            font-size: 1rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            border: 2px solid transparent;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: #ffffff;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-hover);
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+
+        .btn-outline:hover {
+            background-color: rgba(15, 23, 42, 0.05);
+        }
+
+        /* Navbar */
+        #navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5rem;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid transparent;
+            transition: height 0.3s ease, background 0.3s ease, border-color 0.3s ease;
+        }
+
+        #navbar.scrolled {
+            height: 4rem;
+            background: rgba(255, 255, 255, 0.85);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+        }
+
+        .nav-container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 800;
+            letter-spacing: -0.03em;
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2.5rem;
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-main);
+            font-weight: 500;
+            font-size: 0.95rem;
+            transition: opacity 0.2s;
+        }
+
+        .nav-links a:hover {
+            opacity: 0.6;
+        }
+
+        .btn-nav {
+            padding: 0.6rem 1.5rem;
+            font-size: 0.9rem;
+        }
+
+        /* Hero Section */
+        .hero {
+            padding: 18rem 0 10rem;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        .hero p {
+            font-size: clamp(1.125rem, 2vw, 1.375rem);
+            max-width: 700px;
+            margin: 0 auto 3rem;
+            color: var(--text-muted);
+        }
+
+        .hero-btns {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Modules Section */
+        .modules-section {
+            padding: 8rem 0;
+            position: relative;
+            z-index: 10;
+        }
+
+        .modules-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2rem;
+        }
+
+        .card {
+            background: #ffffff;
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 3rem 2.5rem;
+            transition: transform 0.3s ease, border-color 0.3s ease;
+        }
+
+        /* Hover lift with zero heavy shadows */
+        .card:hover {
+            transform: translateY(-6px);
+            border-color: rgba(0, 0, 0, 0.12);
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.35rem 0.85rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            margin-bottom: 2rem;
+        }
+
+        .badge.live {
+            background: var(--badge-live-bg);
+            color: var(--badge-live-text);
+        }
+
+        .badge.soon {
+            background: var(--badge-soon-bg);
+            color: var(--badge-soon-text);
+        }
+
+        /* Features Section */
+        .features-section {
+            padding: 8rem 0 12rem;
+            position: relative;
+            z-index: 10;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 4rem;
+        }
+
+        .feature-icon {
+            width: 56px;
+            height: 56px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(15, 23, 42, 0.03);
+            border-radius: 16px;
+            margin-bottom: 2rem;
+            color: var(--primary-color);
+        }
+
+        .feature-icon svg {
+            width: 28px;
+            height: 28px;
+        }
+
+        /* Footer */
+        footer {
+            padding: 2.5rem 0;
+            border-top: 1px solid var(--border-color);
+            background: transparent;
+            position: relative;
+            z-index: 10;
+        }
+
+        .footer-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .footer-tagline {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+
+        .footer-link {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: opacity 0.2s;
+        }
+
+        .footer-link:hover {
+            opacity: 0.7;
+        }
+
+        /* Responsive constraints */
+        @media (max-width: 900px) {
+            .features-grid {
+                grid-template-columns: 1fr;
+                gap: 3.5rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+
+            .hero {
+                padding: 12rem 0 8rem;
+                min-height: auto;
+            }
+
+            .hero-btns {
+                flex-direction: column;
+                width: 100%;
+                max-width: 300px;
+                margin: 0 auto;
+            }
+
+            .hero-btns .btn {
+                width: 100%;
+            }
+
+            .footer-container {
+                flex-direction: column;
+                text-align: center;
+                gap: 1.5rem;
+            }
+        }
+
+        /* Custom Cursor */
+        body, a, button, .btn, .card {
+            cursor: none !important;
+        }
+
+        #cursor {
+            position: fixed;
+            pointer-events: none;
+            z-index: 9999;
+            border-radius: 50%;
+            width: 28px;
+            height: 28px;
+            background: white;
+            mix-blend-mode: difference;
+            transform: translate(-50%, -50%);
+            transition: transform 0.2s ease;
+            left: -20px;
+            top: -20px;
+        }
+
+        #cursor.hovered {
+            transform: translate(-50%, -50%) scale(1.4);
+        }
+    </style>
+</head>
+<body>
+    <div id="cursor"></div>
+
+    <!-- Canvas for floating particles -->
+    <canvas id="particleCanvas"></canvas>
+
+    <!-- Navigation Bar -->
+    <nav id="navbar">
+        <div class="nav-container">
+            <a href="#" class="logo">PulseAI</a>
+            <div class="nav-links">
+                <a href="#home">Home</a>
+                <a href="#modules">Modules</a>
+                <a href="#features">About</a>
+            </div>
+            <a href="#modules" class="btn btn-primary btn-nav">Get Started</a>
+        </div>
+    </nav>
+
+    <!-- Main Entry Context -->
+    <main>
+        
+        <!-- Hero Section -->
+        <header id="home" class="hero">
+            <div class="container hero-content">
+                <h1>Train Smarter.<br>Move Better.</h1>
+                <p>AI-powered fitness tracking that analyzes your form in real time.</p>
+                <div class="hero-btns">
+                    <a href="#modules" class="btn btn-primary">Explore Modules</a>
+                    <a href="#features" class="btn btn-outline">Watch Demo</a>
+                </div>
+            </div>
+        </header>
+
+        <!-- Modules Section -->
+        <section id="modules" class="modules-section">
+            <div class="container">
+                <h2 class="section-title">Modules</h2>
+                <div class="modules-grid">
+                    
+                    <!-- Card 1 (Live) -->
+                    <div class="card">
+                        <span class="badge live">Live</span>
+                        <h3>PushUp Counter</h3>
+                        <p>Real-time push-up detection using MediaPipe Pose to perfectly count valid reps and flag incorrect form instantly.</p>
+                    </div>
+
+                    <!-- Card 2 (Soon) -->
+                    <div class="card">
+                        <span class="badge soon">Coming Soon</span>
+                        <h3>Squat Detector</h3>
+                        <p>AI-powered squat form analysis that measures your waist-to-knee drop, ensuring deep, safe reps on every lift.</p>
+                    </div>
+
+                    <!-- Card 3 (Soon) -->
+                    <div class="card">
+                        <span class="badge soon">Coming Soon</span>
+                        <h3>Posture Analyzer</h3>
+                        <p>Full-body posture scoring and correction algorithms specifically generated to improve spine alignment and static health over time.</p>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- Features Section -->
+        <section id="features" class="features-section">
+            <div class="container">
+                <div class="features-grid">
+                    
+                    <!-- AI-Powered Feature -->
+                    <div class="feature-item">
+                        <div class="feature-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+                            </svg>
+                        </div>
+                        <h3>AI-Powered</h3>
+                        <p>MediaPipe Pose detects 33 body landmarks in real time, enabling precise and localized skeletal movement analysis immediately.</p>
+                    </div>
+
+                    <!-- Zero Equipment Feature -->
+                    <div class="feature-item">
+                        <div class="feature-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                            </svg>
+                        </div>
+                        <h3>Zero Equipment</h3>
+                        <p>Works exclusively with just your browser and webcam. No specialized hardware, wristbands, or extra tools needed to begin training.</p>
+                    </div>
+
+                    <!-- Instant Feedback Feature -->
+                    <div class="feature-item">
+                        <div class="feature-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                            </svg>
+                        </div>
+                        <h3>Instant Feedback</h3>
+                        <p>Live rep counting and form corrections flash straight on your screen as you continuously move, helping you adapt dynamically.</p>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container footer-container">
+            <div class="logo">PulseAI</div>
+            <div class="footer-tagline">Train Smarter. Move Better.</div>
+            <a href="https://github.com" target="_blank" rel="noopener noreferrer" class="footer-link">GitHub</a>
+        </div>
+    </footer>
+
+    <!-- Interactive Scripts -->
+    <script>
+        // 1. Navigation Shrink Effect
+        const navbar = document.getElementById('navbar');
+        
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 40) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
+
+        // 2. Google Antigravity-Style Floating Particles
+        const canvas = document.getElementById('particleCanvas');
+        const ctx = canvas.getContext('2d');
+
+        let width, height;
+        let particles = [];
+        
+        // Allowed Particle Accents (Blue, Coral, Amber)
+        const colors = ['#3b82f6', '#f43f5e', '#f59e0b'];
+
+        function initCanvas() {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+            generateParticles();
+        }
+
+        class Particle {
+            constructor() {
+                this.x = Math.random() * width;
+                this.y = Math.random() * height;
+                this.radius = Math.random() * 2 + 1.5; // Smooth size distribution
+                this.color = colors[Math.floor(Math.random() * colors.length)];
+                
+                // Keep movement slow and peaceful
+                this.vx = (Math.random() - 0.5) * 0.4;
+                this.vy = (Math.random() - 0.5) * 0.4;
+                
+                // Different opacities for depth effect
+                this.alpha = Math.random() * 0.5 + 0.3; // between 0.3 and 0.8
+            }
+
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+
+                // Drift across bounds safely (wrap edges)
+                if (this.x < -10) this.x = width + 10;
+                if (this.x > width + 10) this.x = -10;
+                if (this.y < -10) this.y = height + 10;
+                if (this.y > height + 10) this.y = -10;
+            }
+
+            draw(context) {
+                context.beginPath();
+                context.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                context.fillStyle = this.color;
+                context.globalAlpha = this.alpha;
+                context.fill();
+            }
+        }
+
+        function generateParticles() {
+            particles = [];
+            // Dynamically calculate reasonable particle load based on screen space
+            const numParticles = Math.min(Math.floor((width * height) / 14000), 75);
+            
+            for (let i = 0; i < numParticles; i++) {
+                particles.push(new Particle());
+            }
+        }
+
+        function animate() {
+            // Only clear the canvas pixels, not overlapping html, to keep DOM safe & airy
+            ctx.clearRect(0, 0, width, height);
+            
+            for (let i = 0; i < particles.length; i++) {
+                particles[i].update();
+                particles[i].draw(ctx);
+            }
+            
+            ctx.globalAlpha = 1; // resets alpha per clear context frame
+            
+            requestAnimationFrame(animate);
+        }
+
+        // Setup execution
+        window.addEventListener('resize', initCanvas);
+        initCanvas();
+        animate();
+
+        // 3. Custom Cursor Implementation
+        const cursorEl = document.getElementById('cursor');
+        let mouseX = window.innerWidth / 2;
+        let mouseY = window.innerHeight / 2;
+        let cursorX = mouseX;
+        let cursorY = mouseY;
+
+        window.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+        });
+
+        function animateCursor() {
+            cursorX += (mouseX - cursorX) * 0.12;
+            cursorY += (mouseY - cursorY) * 0.12;
+            
+            cursorEl.style.left = cursorX + 'px';
+            cursorEl.style.top = cursorY + 'px';
+            
+            requestAnimationFrame(animateCursor);
+        }
+        animateCursor();
+
+        // Hover Effect
+        const hoverables = document.querySelectorAll('a, button, .btn, .card');
+        hoverables.forEach(el => {
+            el.addEventListener('mouseenter', () => cursorEl.classList.add('hovered'));
+            el.addEventListener('mouseleave', () => cursorEl.classList.remove('hovered'));
+        });
+    </script>
+</body>
+</html>
